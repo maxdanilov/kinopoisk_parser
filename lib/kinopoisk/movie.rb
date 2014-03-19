@@ -21,7 +21,7 @@ module Kinopoisk
 
     # Returns an array of strings containing actor names
     def actors
-      doc.search('td.actor_list div a').map{|n| n.text.gsub("\n",'').strip}
+      doc.search("li[itemprop=actors] a").map{|n| n.text.gsub("\n",'').strip}
         .delete_if{|text| text=='...'}
     end
 
@@ -32,7 +32,7 @@ module Kinopoisk
 
     # Returns an integer imdb rating vote count
     def imdb_rating_count
-      doc.search('div.block_2 div:last').text.gsub(/[ ()]/, '').to_i
+      doc.search('div.block_2 div:last').text.match(/\((.*)\)/)[1].gsub(/\D/, '').to_i rescue nil
     end
 
     # Returns a float imdb rating
@@ -92,7 +92,7 @@ module Kinopoisk
 
     # Returns a url to a big sized poster
     def poster_big
-      poster.gsub 'film', 'film_big'
+      poster.gsub('film_iphone', 'film_big').gsub('iphone360_', '')
     end
 
     # Returns an integer length of the movie in minutes
@@ -112,7 +112,7 @@ module Kinopoisk
 
     # Returns an integer kinopoisk rating vote count
     def rating_count
-      search_by_itemprop('ratingCount').to_i
+      search_by_itemprop('ratingCount').gsub(/\D/, '').to_i
     end
 
     # Returns an array of strings containing director names
